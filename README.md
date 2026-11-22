@@ -6,10 +6,19 @@ A small offline-first music player for Android. Open it in Chrome and choose **I
 
 ## Installable APK (optional)
 
-- Direct APK: https://github.com/perrang59-spec/pulse-player/releases/download/v1.0.0/pulse-player-v1.0.0.apk
-- Release page: https://github.com/perrang59-spec/pulse-player/releases/tag/v1.0.0
+- Latest APK (stable link): https://github.com/perrang59-spec/pulse-player/releases/latest/download/pulse-player.apk
+- Release page: https://github.com/perrang59-spec/pulse-player/releases/latest
 
 On Android, open the APK and tap **Install**. You may need to allow installs from unknown sources in Android settings. The APK is a small WebView wrapper around the hosted player; your music still stays on your own device.
+
+## Update notices
+
+The app checks GitHub Releases when it opens. If a newer version exists:
+
+- **APK users** see an **Update available** banner with a **Download APK** button.
+- **Web/PWA users** see a **Reload app** button to clear the cached version.
+
+The notice can be dismissed, and it will not appear again for that release.
 
 ## Features
 
