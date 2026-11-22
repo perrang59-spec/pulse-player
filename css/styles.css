@@ -117,6 +117,16 @@ label.btn:focus-within {
   gap: 8px;
 }
 
+.usage-note {
+  margin: -4px 0 14px;
+  padding: 10px 13px;
+  border: 1px solid rgba(124, 92, 255, 0.35);
+  border-radius: 12px;
+  background: rgba(124, 92, 255, 0.12);
+  color: #d9cfff;
+  font-size: 0.78rem;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
