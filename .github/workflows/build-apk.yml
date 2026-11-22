@@ -1,0 +1,55 @@
+name: Build Pulse Player APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'android/**'
+      - '.github/workflows/build-apk.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x android/gradlew
+
+      - name: Build installable APK
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk pulse-player-v1.0.0.apk
+
+      - name: Publish public GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0
+          name: Pulse Player v1.0.0 (Android APK)
+          body: |
+            Installable Android APK for Pulse Player.
+
+            - Open this APK on your Android phone and tap Install.
+            - You may need to allow installs from unknown sources in Android settings.
+            - The app loads the public Pulse Player web app. Music stays on your own device.
+            - Use only public-domain, Creative Commons, or your own audio files.
+          files: pulse-player-v1.0.0.apk
+          fail_on_unmatched_files: true
