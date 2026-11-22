@@ -1,8 +1,15 @@
 # Pulse Player
 
-A small offline-first music player for Android. It is a PWA (Progressive Web App), so you open it in Chrome and choose **Install app** to add it to your home screen. No APK or app store is needed.
+A small offline-first music player for Android. Open it in Chrome and choose **Install app** to add it to your home screen, or use the optional APK below.
 
-> `player.zip` is the source code/backup only. Extracting it does **not** install the player. Open the hosted link in Chrome to use the app.
+> `player.zip` is the source code/backup only. Extracting it does **not** install the player. Open the hosted link in Chrome to use the app, or install the APK.
+
+## Installable APK (optional)
+
+- Direct APK: https://github.com/perrang59-spec/pulse-player/releases/download/v1.0.0/pulse-player-v1.0.0.apk
+- Release page: https://github.com/perrang59-spec/pulse-player/releases/tag/v1.0.0
+
+On Android, open the APK and tap **Install**. You may need to allow installs from unknown sources in Android settings. The APK is a small WebView wrapper around the hosted player; your music still stays on your own device.
 
 ## Features
 
@@ -15,7 +22,7 @@ A small offline-first music player for Android. It is a PWA (Progressive Web App
 - Media Session support for lock-screen / notification controls where Android Chrome supports it
 - Drag and drop files onto the page on a computer
 
-> Only add music you own or have permission to play. Pulse Player does not download music from the internet.
+> Only add music you own or have permission to play. Pulse Player never uploads or shares your music.
 
 ## Use it
 
@@ -41,7 +48,9 @@ sw.js                      Offline cache
 manifest.webmanifest       PWA install metadata
 icons/                     App icons
 favicon.svg                Browser icon
-player.zip                 Downloadable copy of the app
+player.zip                 Source code/backup only
+android/                   Android WebView APK project
+.github/workflows/         GitHub Actions APK build + release
 ```
 
 ## Change the name
