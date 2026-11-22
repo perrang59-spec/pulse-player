@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pulse-player-v2';
+const CACHE_NAME = 'pulse-player-v3';
 
 const APP_SHELL = [
   './',

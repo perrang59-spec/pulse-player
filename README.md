@@ -2,6 +2,8 @@
 
 A small offline-first music player for Android. It is a PWA (Progressive Web App), so you open it in Chrome and choose **Install app** to add it to your home screen. No APK or app store is needed.
 
+> `player.zip` is the source code/backup only. Extracting it does **not** install the player. Open the hosted link in Chrome to use the app.
+
 ## Features
 
 - Add multiple audio files from your device (`mp3`, `m4a`, `aac`, `ogg`, `wav`, `flac`, `opus`, `webm`)
