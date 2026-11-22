@@ -43,6 +43,14 @@ public class MainActivity extends Activity {
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
 
+        String userAgent = settings.getUserAgentString();
+        if (userAgent == null || userAgent.isEmpty()) {
+            userAgent = "PulsePlayerAPK/1.1.0";
+        } else {
+            userAgent = userAgent + " PulsePlayerAPK/1.1.0";
+        }
+        settings.setUserAgentString(userAgent);
+
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
 
