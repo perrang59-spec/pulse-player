@@ -34,6 +34,19 @@
 
     <p class="usage-note">Use the player on this page in Chrome. The ZIP is source code only — it does not install the app.</p>
 
+    <div id="updateBanner" class="update-banner" role="status" aria-live="polite" hidden>
+      <div class="update-copy">
+        <strong id="updateTitle">Update available</strong>
+        <span id="updateNotes"></span>
+        <a id="updateRelease" class="update-link" href="#" target="_blank" rel="noopener" hidden>View release notes</a>
+      </div>
+      <div class="update-actions">
+        <a id="updateDownload" class="btn btn-small btn-primary" href="#" target="_blank" rel="noopener" hidden>Download APK</a>
+        <button id="updateReload" class="btn btn-small" type="button" hidden>Reload app</button>
+        <button id="updateDismiss" class="btn btn-small btn-ghost" type="button" aria-label="Dismiss update notice">×</button>
+      </div>
+    </div>
+
     <main>
       <section class="panel library-panel" id="dropZone" aria-labelledby="libraryHeading">
         <div class="panel-heading">
