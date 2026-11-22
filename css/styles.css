@@ -127,6 +127,52 @@ label.btn:focus-within {
   font-size: 0.78rem;
 }
 
+.update-banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(49, 208, 170, 0.45);
+  border-radius: 14px;
+  background: rgba(49, 208, 170, 0.12);
+}
+
+.update-banner[hidden] {
+  display: none;
+}
+
+.update-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  font-size: 0.8rem;
+}
+
+.update-copy strong {
+  color: #8ff0d6;
+  font-size: 0.88rem;
+}
+
+.update-copy span {
+  color: var(--muted);
+}
+
+.update-link {
+  align-self: flex-start;
+  color: #8ff0d6;
+  font-size: 0.76rem;
+}
+
+.update-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -614,6 +660,14 @@ input[type="range"]::-moz-range-thumb {
 
   .url-row {
     flex-direction: column;
+  }
+
+  .update-banner {
+    flex-direction: column;
+  }
+
+  .update-actions {
+    justify-content: flex-start;
   }
 
   .header-actions .btn-ghost {
