@@ -13,6 +13,9 @@
   const trackCount = $('trackCount');
   const emptyState = $('emptyState');
   const playlistEl = $('playlist');
+  const urlForm = $('urlForm');
+  const urlInput = $('urlInput');
+  const downloadBtn = $('downloadBtn');
 
   const audio = $('audio');
   const trackTitle = $('trackTitle');
@@ -42,6 +45,7 @@
   let mediaHandlersSet = false;
 
   const REPEAT_MODES = ['off', 'all', 'one'];
+  const MAX_DOWNLOAD_BYTES = 150 * 1024 * 1024;
 
   function openDB() {
     return new Promise((resolve, reject) => {
@@ -419,7 +423,109 @@
     }
   }
 
+  function fileNameFromResponse(response, url) {
+    const disposition = response.headers.get('content-disposition') || '';
+    const match = disposition.match(/filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i);
+    if (match) {
+      const raw = (match[1] || match[2] || '').trim();
+      try {
+        return decodeURIComponent(raw);
+      } catch (error) {
+        return raw;
+      }
+    }
+
+    const pathname = new URL(url).pathname;
+    const last = pathname.split('/').filter(Boolean).pop() || 'downloaded-track';
+    try {
+      return decodeURIComponent(last);
+    } catch (error) {
+      return last;
+    }
+  }
+
+  async function downloadFromUrl(rawUrl) {
+    let parsed;
+    try {
+      parsed = new URL(rawUrl.trim(), location.href);
+    } catch (error) {
+      toast('Enter a valid direct link');
+      return;
+    }
+
+    const localTest = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
+    if (parsed.protocol !== 'https:' && !(localTest && parsed.protocol === 'http:')) {
+      toast('Use an https link');
+      return;
+    }
+
+    const originalLabel = downloadBtn.textContent;
+    downloadBtn.disabled = true;
+    downloadBtn.textContent = 'Downloading…';
+
+    try {
+      const response = await fetch(parsed.href, { mode: 'cors' });
+      if (!response.ok) throw new Error(`Download failed (HTTP ${response.status})`);
+
+      const declaredSize = Number(response.headers.get('content-length') || 0);
+      if (declaredSize && declaredSize > MAX_DOWNLOAD_BYTES) {
+        throw new Error('That file is larger than 150 MB');
+      }
+
+      const blob = await response.blob();
+      if (blob.size > MAX_DOWNLOAD_BYTES) {
+        throw new Error('That file is larger than 150 MB');
+      }
+
+      const type = (response.headers.get('content-type') || blob.type || '').toLowerCase();
+      const name = cleanName(fileNameFromResponse(response, parsed.href));
+      const isAudio = type.startsWith('audio/') ||
+        /\.(mp3|m4a|aac|ogg|oga|wav|flac|opus|webm)$/i.test(name);
+
+      if (!isAudio) {
+        throw new Error('That link is not an audio file');
+      }
+
+      const track = {
+        id: makeId(),
+        name,
+        type: type || 'audio/*',
+        size: blob.size,
+        blob,
+        url: URL.createObjectURL(blob)
+      };
+
+      tracks.push(track);
+      renderPlaylist();
+      if (currentIndex === -1) loadTrack(0, false);
+
+      try {
+        await putTrack(track);
+        toast(`${name} saved to your library`);
+      } catch (error) {
+        console.warn(error);
+        toast('Saved for this session. Device storage is full or unavailable.');
+      }
+
+      urlInput.value = '';
+    } catch (error) {
+      console.warn(error);
+      const message = /Failed to fetch|NetworkError|Load failed/i.test(String(error))
+        ? 'Download blocked. The site may not allow direct downloads.'
+        : (error.message || 'Download failed');
+      toast(message);
+    } finally {
+      downloadBtn.disabled = false;
+      downloadBtn.textContent = originalLabel;
+    }
+  }
+
   function bindEvents() {
+    urlForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      downloadFromUrl(urlInput.value);
+    });
+
     fileInput.addEventListener('change', (event) => {
       addFiles(event.target.files);
       event.target.value = '';
