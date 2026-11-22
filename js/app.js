@@ -33,6 +33,13 @@
   const volume = $('volume');
   const installBtn = $('installBtn');
   const toastEl = $('toast');
+  const updateBanner = $('updateBanner');
+  const updateTitle = $('updateTitle');
+  const updateNotes = $('updateNotes');
+  const updateRelease = $('updateRelease');
+  const updateDownload = $('updateDownload');
+  const updateReload = $('updateReload');
+  const updateDismiss = $('updateDismiss');
 
   let db = null;
   let tracks = [];
@@ -43,9 +50,12 @@
   let deferredPrompt = null;
   let toastTimer = null;
   let mediaHandlersSet = false;
+  let latestReleaseTag = null;
 
   const REPEAT_MODES = ['off', 'all', 'one'];
   const MAX_DOWNLOAD_BYTES = 150 * 1024 * 1024;
+  const APP_VERSION = '1.1.0';
+  const RELEASES_API = 'https://api.github.com/repos/perrang59-spec/pulse-player/releases/latest';
 
   function openDB() {
     return new Promise((resolve, reject) => {
@@ -520,6 +530,112 @@
     }
   }
 
+  function parseVersion(value) {
+    const match = String(value || '').trim().replace(/^v/i, '').match(/^(\d+)\.(\d+)\.(\d+)/);
+    return match ? [Number(match[1]), Number(match[2]), Number(match[3])] : null;
+  }
+
+  function isNewer(remote, current) {
+    if (!remote || !current) return false;
+    for (let i = 0; i < 3; i++) {
+      if (remote[i] > current[i]) return true;
+      if (remote[i] < current[i]) return false;
+    }
+    return false;
+  }
+
+  function isApkClient() {
+    const ua = navigator.userAgent || '';
+    return /PulsePlayerAPK\//i.test(ua) || /Version\/4\.0/i.test(ua);
+  }
+
+  function currentVersion() {
+    const ua = navigator.userAgent || '';
+    const apkMatch = ua.match(/PulsePlayerAPK\/(\d+\.\d+\.\d+)/i);
+    if (apkMatch) return parseVersion(apkMatch[1]);
+    if (/Version\/4\.0/i.test(ua)) return [1, 0, 0];
+    return parseVersion(APP_VERSION);
+  }
+
+  function updateNoticeKey(tag) {
+    return `pulse-update-dismissed-${tag}`;
+  }
+
+  function wasDismissed(tag) {
+    try {
+      return localStorage.getItem(updateNoticeKey(tag)) === '1';
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function rememberDismissal(tag) {
+    try {
+      localStorage.setItem(updateNoticeKey(tag), '1');
+    } catch (error) {
+      // Storage may be unavailable; the notice can simply appear again.
+    }
+  }
+
+  async function reloadToLatest() {
+    if ('serviceWorker' in navigator) {
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((registration) => registration.update()));
+      } catch (error) {
+        console.warn(error);
+      }
+    }
+    const separator = location.href.includes('?') ? '&' : '?';
+    location.href = `${location.href}${separator}u=${Date.now()}`;
+  }
+
+  function showUpdateBanner(release, tag) {
+    latestReleaseTag = tag;
+    updateTitle.textContent = `Update available — ${tag}`;
+    updateNotes.textContent = String(release.body || 'A new version of Pulse Player has been published.')
+      .trim()
+      .slice(0, 220);
+
+    if (release.html_url) {
+      updateRelease.href = release.html_url;
+      updateRelease.hidden = false;
+    } else {
+      updateRelease.hidden = true;
+    }
+
+    const apkAsset = (release.assets || []).find((asset) => /\.apk$/i.test(asset.name || ''));
+    if (isApkClient() && apkAsset) {
+      updateDownload.href = apkAsset.browser_download_url;
+      updateDownload.hidden = false;
+      updateReload.hidden = true;
+    } else {
+      updateDownload.hidden = true;
+      updateReload.hidden = false;
+    }
+
+    updateBanner.hidden = false;
+  }
+
+  async function checkForUpdates() {
+    try {
+      const response = await fetch(RELEASES_API, {
+        cache: 'no-store',
+        headers: { Accept: 'application/vnd.github+json' }
+      });
+      if (!response.ok) return;
+
+      const release = await response.json();
+      const tag = String(release.tag_name || '');
+      if (!isNewer(parseVersion(tag), currentVersion())) return;
+      if (wasDismissed(tag)) return;
+
+      showUpdateBanner(release, tag);
+    } catch (error) {
+      console.warn('Update check failed', error);
+    }
+  }
+
   function bindEvents() {
     urlForm.addEventListener('submit', (event) => {
       event.preventDefault();
@@ -654,6 +770,12 @@
       deferredPrompt = null;
       installBtn.hidden = true;
     });
+
+    updateReload.addEventListener('click', reloadToLatest);
+    updateDismiss.addEventListener('click', () => {
+      updateBanner.hidden = true;
+      if (latestReleaseTag) rememberDismissal(latestReleaseTag);
+    });
   }
 
   function restoreVolume() {
@@ -699,6 +821,7 @@
     }
 
     registerServiceWorker();
+    checkForUpdates();
   }
 
   init();
