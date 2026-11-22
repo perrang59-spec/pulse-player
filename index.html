@@ -47,6 +47,24 @@
           <label for="fileInput" class="btn btn-primary">Add music</label>
           <button id="clearBtn" class="btn btn-ghost" type="button">Clear library</button>
         </div>
+
+        <form id="urlForm" class="url-form">
+          <label class="url-label" for="urlInput">Download from a direct audio link</label>
+          <div class="url-row">
+            <input id="urlInput" type="url" placeholder="https://example.com/track.ogg" autocomplete="url" required>
+            <button id="downloadBtn" class="btn btn-primary" type="submit">Download</button>
+          </div>
+          <p class="drop-hint">Only public-domain, Creative Commons, or your own files. Use a direct <strong>https</strong> link.</p>
+          <details class="sources">
+            <summary>Legal places to find audio</summary>
+            <ul>
+              <li><a href="https://commons.wikimedia.org/wiki/Category:Audio_files" target="_blank" rel="noopener">Wikimedia Commons</a></li>
+              <li><a href="https://freemusicarchive.org/" target="_blank" rel="noopener">Free Music Archive</a></li>
+              <li><a href="https://archive.org/details/audio" target="_blank" rel="noopener">Internet Archive</a></li>
+            </ul>
+          </details>
+        </form>
+
         <p class="drop-hint">Tip: you can also drop audio files here on a computer.</p>
       </section>
 

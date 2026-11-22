@@ -5,6 +5,7 @@ A small offline-first music player for Android. It is a PWA (Progressive Web App
 ## Features
 
 - Add multiple audio files from your device (`mp3`, `m4a`, `aac`, `ogg`, `wav`, `flac`, `opus`, `webm`)
+- Download from a direct audio URL and save it into the library (public-domain, Creative Commons, or your own files only)
 - Play / pause, previous / next, seek bar and volume
 - Playlist with shuffle and repeat modes (off → all → one)
 - Files are stored in your browser on your device using IndexedDB, so your playlist survives a reload
@@ -17,10 +18,12 @@ A small offline-first music player for Android. It is a PWA (Progressive Web App
 ## Use it
 
 1. Open the live link on your Android phone in Chrome.
-2. Tap **Add music** and select songs from your device.
+2. Tap **Add music** for files already on your device, or paste a direct `https` audio link under **Download from a direct audio link**.
 3. Tap a song in the playlist, or press **Play**.
 4. Use **🔀** for shuffle and **🔁** to cycle repeat modes: off, all, one.
 5. Tap **Install app** when Chrome offers it, then launch Pulse Player from your home screen.
+
+> URL downloads only work when the host allows direct cross-origin downloads. If a site blocks it, download the file with your browser first and use **Add music**. Do not use the URL box for copyrighted music you do not have permission to download.
 
 ## Privacy
 
